@@ -2,6 +2,9 @@
 
 import fnmatch
 import os
+import smtplib  
+from email.mime.text import MIMEText  
+from email.header import Header  
 
 def find_file_and_update_baseline(baseline):
     """ Go through the specified path and find the files
@@ -19,6 +22,7 @@ def find_file_and_update_baseline(baseline):
                 print(filename)
                 baseline.append(filename)
                 file_write.write(filename + "\n")
+                send_email(filename)
 
             # print(os.path.join(root, filename))
 
@@ -40,6 +44,27 @@ def read_logfile():
 def print_logfile(filedata):
     for filename in filedata:
         print (filename)
+
+def send_email(ILM_library):
+    """ Send email through STMP email server """
+
+    sender = 'peng.gao@autodesk.com'  
+    receiver = 'peng.gao@autodesk.com'  
+    subject = 'ILM: There is new medium material library in AIRMax BB'  
+    smtpserver = 'mail-relay.autodesk.com'  
+    # username = 'xxx'  
+    # password = 'xxx'  
+  
+    msg = MIMEText(ILM_library)  
+    msg['Subject'] = Header(subject)
+    msg['From'] = sender
+    msg['To'] = receiver
+  
+    smtp = smtplib.SMTP()
+    smtp.connect('mail-relay.autodesk.com')  
+    # smtp.login(username, password)  
+    smtp.sendmail(sender, receiver, msg.as_string())  
+    smtp.quit()
 
 # Read the logfile as baseline
 baseline = read_logfile()
